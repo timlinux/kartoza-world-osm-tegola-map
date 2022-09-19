@@ -23,7 +23,10 @@
       "source": "OSMWorld",
       "source-layer": "world",
       "layout": {"visibility": "visible"},
-      "paint": {"fill-outline-color": "rgba(0, 0, 0, 1)"}
+      "paint": {
+        "fill-outline-color": "rgba(0, 0, 0, 1)",
+        "fill-color": "rgba(251, 255, 236, 0.99)"
+      }
     },
     {
       "id": "buildings",
@@ -48,22 +51,59 @@
       "paint": {"line-color": "rgba(118, 132, 255, 1)", "line-width": 2}
     },
     {
-      "id": "roads-copy",
-      "type": "line",
-      "source": "OSMWorld",
-      "source-layer": "roads",
-      "minzoom": 10,
-      "layout": {"line-cap": "round"},
-      "paint": {"line-color": "rgba(255, 255, 255, 1)", "line-width": 3}
-    },
-    {
       "id": "roads",
       "type": "line",
       "source": "OSMWorld",
       "source-layer": "roads",
       "minzoom": 10,
       "layout": {"line-cap": "round"},
-      "paint": {"line-color": "rgba(0, 0, 0, 1)", "line-width": 2}
+      "paint": {
+        "line-color": "rgba(0, 0, 0, 1)",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10,
+          1,
+          15,
+          5,
+          20,
+          10
+        ]
+      }
+    },
+    {
+      "id": "roads-copy",
+      "type": "line",
+      "source": "OSMWorld",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "layout": {"line-cap": "round"},
+      "paint": {
+        "line-color": "rgba(255, 255, 255, 1)",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0, 15, 4, 20, 9]
+      }
+    },
+    {
+      "id": "places-copy",
+      "type": "heatmap",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 10,
+      "layout": {"visibility": "none"}
+    },
+    {
+      "id": "places-points",
+      "type": "circle",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 10,
+      "paint": {
+        "circle-color": "rgba(255, 10, 10, 1)",
+        "circle-stroke-color": "rgba(0, 0, 0, 0)",
+        "circle-stroke-opacity": 0,
+        "circle-radius": 3
+      }
     }
   ],
   "id": "osm-liberty"
