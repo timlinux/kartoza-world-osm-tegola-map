@@ -1,0 +1,3 @@
+timestamp=2022-09-05T00\:00\:00Z
+sequenceNumber=5217998
+replicationUrl=https://planet.openstreetmap.org/replication/minute/

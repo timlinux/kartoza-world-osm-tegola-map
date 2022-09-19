@@ -1,0 +1,251 @@
+############################################################
+#
+#  A World Map from OSM published as vector tiles in 
+#              gospatial/tegola
+#
+#         Data (c) OpenStreetMap Contributors
+#
+############################################################
+
+version: "3.9"
+
+# 
+# DOCKER IMAGES
+#
+
+# 13-3.1 is the first pg version with FORCE_SSL support
+# needed to force clients to use SSL
+x-postgres-image: &postgres-image kartoza/postgis:13-3.1
+x-osm-update-image: &osm-update-image kartoza/docker-osm:osmupdate-latest
+x-imposm-image: &imposm-image kartoza/docker-osm:imposm-latest
+x-osmenrich-image: &osm-enrich-image kartoza/docker-osm:osmenrich-latest
+
+# 
+# VOLUMES
+#
+
+# Generally we are using docker volumes for all volumes
+# except conf files which are host mounted volumes out
+# of our git repo checkout.
+# 
+
+volumes:
+  import_done:
+  import_queue:
+    #postgis_data:
+  osm_import_done:
+  osm_import_queue:
+    # osm_cache:
+
+#
+# SERVICES
+#
+
+services:
+ 
+  db:
+    image: *postgres-image
+    # Allocate more then the default 64mb to postgresql
+    shm_size: 10g
+    volumes:
+      # Persistent storage of the database cluster 
+      - /home/timlinux/gisdata/docker-world-tegola-osm-map/postgis_data:/var/lib/postgresql
+    env_file: .env
+    environment:
+      # You can define multiple databases by providing a comma
+      # separated list here.
+      # gis - for general purpose gis projects
+      # mergin-server - for mergin server flask app
+      # mergin - for mergin-db-sync
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      # Read the notes at
+      # https://github.com/kartoza/docker-postgis#postgres-ssl-setup
+      # Certificate from letsencrypt doesn't currently work
+      #- SSL_CERT_FILE=/etc/letsencrypt/live/${DOMAIN}/cert.pems
+      #- SSL_KEY_FILE=/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+      #- SSL_CA_FILE=/your/own/ssl_ca_file.pem
+      # Force clients to connect with SSL - will add hostssl
+      # instead of host to lines in pg_hba.conf
+      - FORCE_SSL=TRUE
+      # When connecting using your client, set SSL mode to 'Require'
+      # If you want force using a certificate, use PASSWORD_AUTHENTICATION=cert
+      # But then you also need to deploy certificates (again see the docs above)
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - PASSWORD_AUTHENTICATION=scram-sha-256
+      # You can pass as many extensions as you need.
+      - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,postgis_topology,postgis_raster,pgrouting
+      # Some extensions need to be registered in the postgresql.conf as
+      # shared_preload_libraries. pg_cron should always be added because the
+      # extension is installed with the image.
+      - SHARED_PRELOAD_LIBRARIES=pg_cron 
+      - DEFAULT_ENCODING="UTF8"
+      - DEFAULT_COLLATION="en_US.UTF-8"
+      - DEFAULT_CTYPE="en_US.UTF-8"
+      - POSTGRES_TEMPLATE_EXTENSIONS=true
+
+    networks:
+     - osmmirror
+    ports:
+      - ${POSTGRES_PUBLIC_PORT}:${POSTGRES_PRIVATE_PORT} 
+    restart: unless-stopped
+    healthcheck:
+        test: "exit 0"
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  ############################################################
+  #
+  # OSM Sync Services 
+  #
+  ############################################################
+
+  imposm:
+    image: *imposm-image
+    volumes:
+      # These are sharable to other containers
+      - ./conf/osm_conf:/home/settings
+      - osm_import_done:/home/import_done
+      - osm_import_queue:/home/import_queue
+      #- osm_cache:/home/cache
+      - /home/timlinux/gisdata/docker-world-tegola-osm-map/osm_cache:/home/cache
+    depends_on:
+      - db
+    networks:
+     - osmmirror
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DBNAME=gis
+      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
+      - POSTGRES_HOST=db
+      - SSL_MODE=require
+      # seconds between 2 executions of the script if 0, then no
+      # update will be done, only the first initial import from the
+      # PBF
+      - TIME=120
+      # folder for settings (with *.json and *.sql)
+      - SETTINGS=settings
+      # folder for caching
+      - CACHE=cache
+      # folder for diff which has been imported
+      - IMPORT_DONE=import_done
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=import_queue
+      # it can be 3857
+      - SRID=4326
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#optimize
+      - OPTIMIZE=false
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_PRODUCTION=${DBSCHEMA_PRODUCTION}
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_IMPORT=osm_import
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_BACKUP=osm_backup
+      # Install some styles if you are using the default mapping.
+      # It can be 'yes' or 'no'
+      - QGIS_STYLE=no
+      # Use clip in the database
+      - CLIP=no
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  osmupdate:
+    image: *osm-update-image
+    volumes:
+      # These are sharable to other containers
+      - ./conf/osm_conf:/home/settings
+      - osm_import_done:/home/import_done
+      - osm_import_queue:/home/import_queue
+      #- osm_cache:/home/cache
+      - /home/timlinux/gisdata/docker-world-tegola-osm-map/osm_cache:/home/cache
+    depends_on:
+      - db
+    networks:
+     - osmmirror
+    environment:
+      # These are all currently the defaults but listed here for
+      # your convenience if you want to change them.
+      
+      # The maximum time range to assemble a cumulated changefile.
+      - MAX_DAYS=100
+      # osmupdate uses a combination of minutely, hourly and daily
+      # changefiles. This value can be minute, hour, day or
+      # sporadic.
+      - DIFF=sporadic
+      # argument to determine the maximum number of parallely
+      # processed changefiles.
+      - MAX_MERGE=7
+      # define level for gzip compression. values between 1 (low
+      # compression but fast) and 9 (high compression but slow)
+      - COMPRESSION_LEVEL=1
+      # change the URL to use a custom URL to fetch regional file
+      # updates.
+      - BASE_URL=http://planet.openstreetmap.org/replication/
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=import_queue
+      # folder for diff which has been imported
+      - IMPORT_DONE=import_done
+      # seconds between 2 executions of the script
+      # if 0, then no update will be done, only the first initial
+      # import from the PBF
+      - TIME=120
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  # This server updates user and date of osm edits in the mirror
+  # Only enable this for small areas and if you really need it - 
+  # it spawns a lot of API hits on the OSM api server
+  #  osmenrich:
+  #    image: *osm-enrich-image
+  #    volumes:
+  #      # These are sharable to other containers
+  #      - ./conf/osm_conf:/home/settings
+  #      - osm_import_done:/home/import_done
+  #      - osm_import_queue:/home/import_queue
+  #      - osm_cache:/home/cache
+  #    depends_on:
+  #      - db
+  #    networks:
+  #     - osmmirror
+  #    env_file: .env
+  #    environment:
+  #      - POSTGRES_USER=${POSTGRES_USER}
+  #      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+  #      - POSTGRES_DBNAME=gis
+  #      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
+  #      - POSTGRES_HOST=db
+  #      - SSL_MODE=require
+  #      # see http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+  #      - DBSCHEMA_PRODUCTION=${DBSCHEMA_PRODUCTION}
+  #      # These are all currently the defaults but listed here for
+  #      # your convenience if you want to change them.
+  #      # folder for diff which hasn't been imported yet
+  #      # - IMPORT_QUEUE=import_queue
+  #      # folder for diff which has been imported
+  #      # - IMPORT_DONE=import_done
+  #      # seconds between 2 executions of the script
+  #      # if 0, then no update will be done, only the first initial import from the PBF
+  #      # - TIME=120
+  #      # command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
+  #    logging:
+  #      driver: json-file
+  #      options:
+  #        max-size: 200m
+  #        max-file: '10'
+
+networks:
+  osmmirror:

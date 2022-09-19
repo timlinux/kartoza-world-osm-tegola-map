@@ -1,0 +1,162 @@
+tile_buffer = 64
+
+[webserver]
+port = ":9090"              # port to bind the web server to. defaults ":8080"
+
+[cache]                     # configure a tile cache
+type = "file"               # a file cache will cache to the local file system
+basepath = "/tmp/tegola"    # where to write the file cache
+
+# register data providers
+[[providers]]
+name = "db"       # provider name is referenced from map layers (required)
+type = "postgis"
+uri = "postgres://docker:uH7vie7aepu1ahC5eedo@localhost:5432/gis?sslmode=require" # PostGIS connection string (required)
+srid = 3857                 # The default srid for this provider. Defaults to WebMercator (3857) (optional)
+max_connections = 50        # The max connections to maintain in the connection pool. Default is 100. (optional)
+
+    [[providers.layers]]
+    name = "world"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geom"         # geom field. default is geom
+    id_fieldname = "fid"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "public.world"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "buildings"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_buildings"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "roads"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_roads"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "railways"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_railways"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "rivers"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_waterways_rivers"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "streams"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_waterways_streams"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "places"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_places"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "landcover"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_landcover"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "parks"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_parks"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
+    name = "bay"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "the_geom"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_bay"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+
+# maps are made up of layers
+[[maps]]
+name = "world"                              # used in the URL to reference this map (/maps/:map_name)
+tile_buffer = 0                             # number of pixels to extend a tile's clipping area
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.world"  # must match a data provider layer
+    min_zoom = 0                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.buildings"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.roads"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+    
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.railways"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.rivers"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.streams"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.places"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.landcover"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+    
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.parks"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.bay"  # must match a data provider layer
+    min_zoom = 10                            # minimum zoom level to include this layer
+    max_zoom = 24

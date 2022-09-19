@@ -1,0 +1,70 @@
+{
+  "version": 8,
+  "name": "Kartoza OSM",
+  "metadata": {
+    "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
+    "maputnik:renderer": "mbgljs",
+    "openmaptiles:version": "3.x"
+  },
+  "sources": {
+    "OSMWorld": {
+      "type": "vector",
+      "tiles": ["http://localhost:9090/maps/world/{z}/{x}/{y}.pbf"],
+      "minZoom": 0,
+      "maxZoom": 14
+    }
+  },
+  "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
+  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={key}",
+  "layers": [
+    {
+      "id": "world",
+      "type": "fill",
+      "source": "OSMWorld",
+      "source-layer": "world",
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-outline-color": "rgba(0, 0, 0, 1)"}
+    },
+    {
+      "id": "buildings",
+      "type": "fill-extrusion",
+      "source": "OSMWorld",
+      "source-layer": "buildings",
+      "paint": {
+        "fill-extrusion-color": "rgba(203, 195, 195, 1)",
+        "fill-extrusion-translate": [3, 0],
+        "fill-extrusion-translate-anchor": "map",
+        "fill-extrusion-height": 20,
+        "fill-extrusion-vertical-gradient": true,
+        "fill-extrusion-opacity": {"stops": [[6, 1], [10, 1]]}
+      }
+    },
+    {
+      "id": "rivers",
+      "type": "line",
+      "source": "OSMWorld",
+      "source-layer": "rivers",
+      "minzoom": 10,
+      "paint": {"line-color": "rgba(118, 132, 255, 1)", "line-width": 2}
+    },
+    {
+      "id": "roads-copy",
+      "type": "line",
+      "source": "OSMWorld",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "layout": {"line-cap": "round"},
+      "paint": {"line-color": "rgba(255, 255, 255, 1)", "line-width": 3}
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "OSMWorld",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "layout": {"line-cap": "round"},
+      "paint": {"line-color": "rgba(0, 0, 0, 1)", "line-width": 2}
+    }
+  ],
+  "id": "osm-liberty"
+}
