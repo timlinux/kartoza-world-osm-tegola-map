@@ -24,6 +24,14 @@ max_connections = 50        # The max connections to maintain in the connection 
     # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
 
     [[providers.layers]]
+    name = "admin"                    # will be encoded as the layer name in the tile
+    geometry_fieldname = "geometry"         # geom field. default is geom
+    id_fieldname = "id"                # geom id field. default is gid
+    srid = 4326                         # the srid of table's geo data. Defaults to WebMercator (3857)
+    tablename = "osm.osm_admin"  # sql or table_name are required
+    # sql = "select geometry, id from osm.osm_admin WHERE geometry && !BBOX!"
+
+    [[providers.layers]]
     name = "buildings"                    # will be encoded as the layer name in the tile
     geometry_fieldname = "geometry"         # geom field. default is geom
     id_fieldname = "id"                # geom id field. default is gid
@@ -105,6 +113,12 @@ tile_buffer = 0                             # number of pixels to extend a tile'
     # It can also be used to group multiple ProviderLayers under the same namespace.
     provider_layer = "db.world"  # must match a data provider layer
     min_zoom = 0                            # minimum zoom level to include this layer
+    max_zoom = 7
+
+    [[maps.layers]]
+    # It can also be used to group multiple ProviderLayers under the same namespace.
+    provider_layer = "db.admin"  # must match a data provider layer
+    min_zoom = 7                            # minimum zoom level to include this layer
     max_zoom = 24
 
     [[maps.layers]]
