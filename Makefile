@@ -3,7 +3,7 @@ SHELL := /bin/bash
 #----------------- Postgres --------------------------
 run-maputnik:
 	# TODO - move to docker compose rather
-	@docker run -it --rm -p 8888:8888 maputnik/editor
+	@docker run -it --rm -p 8888:8888 maputnik/editor 
 
 deploy-postgres: enable-postgres configure-postgres start-postgres
 
