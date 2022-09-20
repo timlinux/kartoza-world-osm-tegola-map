@@ -118,7 +118,7 @@ tile_buffer = 0                             # number of pixels to extend a tile'
     [[maps.layers]]
     # It can also be used to group multiple ProviderLayers under the same namespace.
     provider_layer = "db.admin"  # must match a data provider layer
-    min_zoom = 7                            # minimum zoom level to include this layer
+    min_zoom = 8                            # minimum zoom level to include this layer
     max_zoom = 24
 
     [[maps.layers]]
