@@ -19,6 +19,11 @@ x-postgres-image: &postgres-image kartoza/postgis:13-3.1
 x-osm-update-image: &osm-update-image kartoza/docker-osm:osmupdate-latest
 x-imposm-image: &imposm-image kartoza/docker-osm:imposm-latest
 x-osmenrich-image: &osm-enrich-image kartoza/docker-osm:osmenrich-latest
+x-tegola-image: &tegola-image gospatial/tegola
+x-maputnik-editor-image: &maputnik-editor-image maputnik/editor
+
+
+
 
 # 
 # VOLUMES
@@ -206,46 +211,47 @@ services:
         max-size: 200m
         max-file: '10'
 
-  # This server updates user and date of osm edits in the mirror
-  # Only enable this for small areas and if you really need it - 
-  # it spawns a lot of API hits on the OSM api server
-  #  osmenrich:
-  #    image: *osm-enrich-image
-  #    volumes:
-  #      # These are sharable to other containers
-  #      - ./conf/osm_conf:/home/settings
-  #      - osm_import_done:/home/import_done
-  #      - osm_import_queue:/home/import_queue
-  #      - osm_cache:/home/cache
-  #    depends_on:
-  #      - db
-  #    networks:
-  #     - osmmirror
-  #    env_file: .env
-  #    environment:
-  #      - POSTGRES_USER=${POSTGRES_USER}
-  #      - POSTGRES_PASS=${POSTGRES_PASSWORD}
-  #      - POSTGRES_DBNAME=gis
-  #      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
-  #      - POSTGRES_HOST=db
-  #      - SSL_MODE=require
-  #      # see http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
-  #      - DBSCHEMA_PRODUCTION=${DBSCHEMA_PRODUCTION}
-  #      # These are all currently the defaults but listed here for
-  #      # your convenience if you want to change them.
-  #      # folder for diff which hasn't been imported yet
-  #      # - IMPORT_QUEUE=import_queue
-  #      # folder for diff which has been imported
-  #      # - IMPORT_DONE=import_done
-  #      # seconds between 2 executions of the script
-  #      # if 0, then no update will be done, only the first initial import from the PBF
-  #      # - TIME=120
-  #      # command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
-  #    logging:
-  #      driver: json-file
-  #      options:
-  #        max-size: 200m
-  #        max-file: '10'
+  tegola:
+    image: *tegola-image
+    entrypoint: /opt/tegola 
+    command: serve --config /config/tegola.conf
+    volumes:
+      - ./conf/tegola_conf:/config
+    depends_on:
+      - db
+    ports:
+      - 9090:9090
+    networks:
+     - osmmirror
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DBNAME=gis
+      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
+      - POSTGRES_HOST=db
+      - SSL_MODE=require
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  maputnik-editor:
+    image: *maputnik-editor-image
+    depends_on:
+      - tegola
+    ports:
+      - 8888:8888
+    networks:
+     - osmmirror
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
 
 networks:
   osmmirror:
