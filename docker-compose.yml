@@ -4,12 +4,12 @@
 #              gospatial/tegola
 #
 #         Data (c) OpenStreetMap Contributors
-#
+#          This Project (c) Tim Sutton, 2022
 ############################################################
 
 version: "3.9"
 
-# 
+#
 # DOCKER IMAGES
 #
 
@@ -22,32 +22,26 @@ x-osmenrich-image: &osm-enrich-image kartoza/docker-osm:osmenrich-latest
 x-tegola-image: &tegola-image gospatial/tegola
 x-maputnik-editor-image: &maputnik-editor-image maputnik/editor
 
-
-
-
-# 
+#
 # VOLUMES
 #
 
 # Generally we are using docker volumes for all volumes
 # except conf files which are host mounted volumes out
 # of our git repo checkout.
-# 
+#
 
 volumes:
   import_done:
   import_queue:
-    #postgis_data:
   osm_import_done:
   osm_import_queue:
-    # osm_cache:
 
-#
-# SERVICES
-#
-
+    #
+    # SERVICES
+    #
 services:
- 
+
   db:
     image: *postgres-image
     # Allocate more then the default 64mb to postgresql
@@ -84,19 +78,19 @@ services:
       # Some extensions need to be registered in the postgresql.conf as
       # shared_preload_libraries. pg_cron should always be added because the
       # extension is installed with the image.
-      - SHARED_PRELOAD_LIBRARIES=pg_cron 
+      - SHARED_PRELOAD_LIBRARIES=pg_cron
       - DEFAULT_ENCODING="UTF8"
       - DEFAULT_COLLATION="en_US.UTF-8"
       - DEFAULT_CTYPE="en_US.UTF-8"
       - POSTGRES_TEMPLATE_EXTENSIONS=true
 
     networks:
-     - osmmirror
+      - osmmirror
     ports:
-      - ${POSTGRES_PUBLIC_PORT}:${POSTGRES_PRIVATE_PORT} 
+      - ${POSTGRES_PUBLIC_PORT}:${POSTGRES_PRIVATE_PORT}
     restart: unless-stopped
     healthcheck:
-        test: "exit 0"
+      test: "exit 0"
     logging:
       driver: json-file
       options:
@@ -121,7 +115,7 @@ services:
     depends_on:
       - db
     networks:
-     - osmmirror
+      - osmmirror
     env_file: .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -176,11 +170,11 @@ services:
     depends_on:
       - db
     networks:
-     - osmmirror
+      - osmmirror
     environment:
       # These are all currently the defaults but listed here for
       # your convenience if you want to change them.
-      
+
       # The maximum time range to assemble a cumulated changefile.
       - MAX_DAYS=100
       # osmupdate uses a combination of minutely, hourly and daily
@@ -213,7 +207,7 @@ services:
 
   tegola:
     image: *tegola-image
-    entrypoint: /opt/tegola 
+    entrypoint: /opt/tegola
     command: serve --config /config/tegola.conf
     volumes:
       - ./conf/tegola_conf:/config
@@ -222,7 +216,7 @@ services:
     ports:
       - 9090:9090
     networks:
-     - osmmirror
+      - osmmirror
     env_file: .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -245,7 +239,7 @@ services:
     ports:
       - 8888:8888
     networks:
-     - osmmirror
+      - osmmirror
     restart: unless-stopped
     logging:
       driver: json-file
