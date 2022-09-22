@@ -36,10 +36,20 @@
       }
     },
     {
+      "id": "parks",
+      "type": "fill",
+      "source": "OSMWorld",
+      "source-layer": "parks",
+      "minzoom": 10,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(216, 255, 189, 0.26)"}
+    },
+    {
       "id": "admin-2",
       "type": "fill",
       "source": "OSMWorld",
       "source-layer": "admin-2",
+      "layout": {"visibility": "visible"},
       "paint": {
         "fill-color": "rgba(252, 252, 252, 1)",
         "fill-outline-color": "rgba(136, 136, 136, 1)"
@@ -50,8 +60,9 @@
       "type": "fill",
       "source": "OSMWorld",
       "source-layer": "admin-3",
+      "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(255, 255, 255, 1)",
+        "fill-color": "rgba(230, 131, 131, 1)",
         "fill-outline-color": "rgba(70, 70, 70, 1)"
       }
     },
@@ -62,7 +73,7 @@
       "source-layer": "admin-4",
       "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(255, 255, 255, 1)",
+        "fill-color": "rgba(224, 230, 156, 1)",
         "fill-outline-color": "rgba(41, 38, 38, 1)"
       }
     },
@@ -72,19 +83,18 @@
       "source": "OSMWorld",
       "source-layer": "admin-5",
       "minzoom": 10,
+      "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(248, 246, 246, 1)",
+        "fill-color": "rgba(193, 175, 207, 1)",
         "fill-outline-color": "#292626"
       }
     },
     {
-      "id": "parks",
+      "id": "coastlines",
       "type": "fill",
       "source": "OSMWorld",
-      "source-layer": "parks",
-      "minzoom": 10,
-      "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(216, 255, 189, 0.26)"}
+      "source-layer": "coastlines",
+      "paint": {"fill-color": "#C0E1F1"}
     },
     {
       "id": "landcover",
@@ -103,7 +113,7 @@
       "minzoom": 10,
       "filter": ["all", ["==", "subclass", "water"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(131, 161, 193, 1)"}
+      "paint": {"fill-color": "#C0E1F1"}
     },
     {
       "id": "rivers",
@@ -112,7 +122,7 @@
       "source-layer": "rivers",
       "minzoom": 10,
       "layout": {"visibility": "visible"},
-      "paint": {"line-color": "rgba(131, 161, 193, 1)", "line-width": 2}
+      "paint": {"line-color": "rgba(192, 225, 241, 1)", "line-width": 2}
     },
     {
       "id": "streams",
@@ -120,7 +130,7 @@
       "source": "OSMWorld",
       "source-layer": "streams",
       "layout": {"visibility": "visible"},
-      "paint": {"line-color": "rgba(131, 161, 193, 1)"}
+      "paint": {"line-color": "#C0E1F1"}
     },
     {
       "id": "buildings-shadow",
@@ -502,31 +512,11 @@
       }
     },
     {
-      "id": "places-heatmap",
-      "type": "heatmap",
-      "source": "OSMWorld",
-      "source-layer": "places",
-      "minzoom": 10,
-      "layout": {"visibility": "none"}
-    },
-    {
       "id": "places-small",
       "type": "circle",
       "source": "OSMWorld",
-      "source-layer": "places",
-      "minzoom": 14,
-      "filter": [
-        "any",
-        ["==", "place", "hamlet"],
-        ["==", "place", "village"],
-        ["==", "name", "locality"]
-      ],
-      "layout": {"visibility": "visible"},
-      "paint": {
-        "circle-color": "rgba(0, 0, 0, 1)",
-        "circle-stroke-opacity": 0,
-        "circle-radius": 2
-      }
+      "source-layer": "places-small",
+      "paint": {"circle-radius": 2}
     },
     {
       "id": "places-major",
@@ -578,7 +568,7 @@
       "layout": {
         "line-cap": "butt",
         "line-join": "round",
-        "visibility": "none"
+        "visibility": "visible"
       },
       "paint": {
         "line-color": "rgba(255, 37, 0, 1)",
@@ -601,42 +591,10 @@
       }
     },
     {
-      "id": "place-markers-copy",
-      "type": "symbol",
-      "source": "OSMWorld",
-      "source-layer": "places",
-      "minzoom": 9,
-      "filter": [
-        "any",
-        ["==", "place", "hamlet"],
-        ["==", "place", "village"],
-        ["==", "name", "locality"]
-      ],
-      "layout": {
-        "text-field": "{name}",
-        "text-transform": "uppercase",
-        "text-size": 8,
-        "text-font": [
-          "Open Sans Regular",
-          "Arial Unicode MS Regular",
-          "Lato Extra Light"
-        ],
-        "text-anchor": "bottom-left",
-        "visibility": "none"
-      }
-    },
-    {
       "id": "place-labels-small",
       "type": "symbol",
       "source": "OSMWorld",
-      "source-layer": "places",
-      "minzoom": 9,
-      "filter": [
-        "any",
-        ["==", "place", "hamlet"],
-        ["==", "place", "village"],
-        ["==", "name", "locality"]
-      ],
+      "source-layer": "places-small",
       "layout": {
         "text-field": "{name}",
         "text-transform": "uppercase",
@@ -644,7 +602,39 @@
         "text-font": ["Lato Extra Light"],
         "text-anchor": "bottom-left"
       }
-    }
+    },
+    {
+      "id": "place-labels-city",
+      "type": "symbol",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 8,
+      "filter": ["any", ["==", "place", "city"]],
+      "layout": {
+        "text-field": "{name}",
+        "text-transform": "uppercase",
+        "text-size": 14,
+        "text-font": ["Lato Bold"],
+        "text-anchor": "bottom-left"
+      }
+    },
+    {
+      "id": "place-labels-town",
+      "type": "symbol",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 8,
+      "filter": ["any", ["==", "place", "town"]],
+      "layout": {
+        "text-field": "{name}",
+        "text-transform": "uppercase",
+        "text-size": 12,
+        "text-font": ["Lato Extra Light"],
+        "text-anchor": "bottom-left",
+        "visibility": "visible"
+      }
+    },
+    {"id": "bay", "type": "fill", "source": "OSMWorld", "source-layer": "bay"}
   ],
   "id": "osm-liberty"
 }
