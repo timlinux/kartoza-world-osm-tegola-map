@@ -226,6 +226,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
       - POSTGRES_HOST=db
       - SSL_MODE=require
+      - TEGOLA_PORT=9090
     restart: unless-stopped
     logging:
       driver: json-file
@@ -242,8 +243,6 @@ services:
       - ./tiles:/tmp/tegola
     depends_on:
       - db
-    ports:
-      - 9090:9090
     networks:
       - osmmirror
     env_file: .env
@@ -254,7 +253,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
       - POSTGRES_HOST=db
       - SSL_MODE=require
-    restart: unless-stopped
+    restart: never
     logging:
       driver: json-file
       options:
