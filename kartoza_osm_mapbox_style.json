@@ -46,6 +46,14 @@
       "paint": {"fill-color": "rgba(216, 255, 189, 0.26)"}
     },
     {
+      "id": "water",
+      "type": "fill",
+      "source": "OSMWorld",
+      "source-layer": "water",
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "#C0E1F1"}
+    },
+    {
       "id": "admin-2",
       "type": "fill",
       "source": "OSMWorld",
@@ -95,25 +103,6 @@
       "type": "fill",
       "source": "OSMWorld",
       "source-layer": "coastlines",
-      "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "#C0E1F1"}
-    },
-    {
-      "id": "landcover",
-      "type": "fill",
-      "source": "OSMWorld",
-      "source-layer": "landcover",
-      "minzoom": 10,
-      "layout": {"visibility": "none"},
-      "paint": {"fill-color": "rgba(179, 179, 179, 1)"}
-    },
-    {
-      "id": "landcover-water",
-      "type": "fill",
-      "source": "OSMWorld",
-      "source-layer": "landcover",
-      "minzoom": 10,
-      "filter": ["all", ["==", "subclass", "water"]],
       "layout": {"visibility": "visible"},
       "paint": {"fill-color": "#C0E1F1"}
     },
@@ -544,7 +533,7 @@
       "source-layer": "places",
       "minzoom": 6,
       "filter": ["any", ["==", "place", "state"]],
-      "layout": {"visibility": "visible"},
+      "layout": {"visibility": "none"},
       "paint": {
         "circle-color": "rgba(0, 0, 0, 1)",
         "circle-stroke-opacity": 0,
@@ -560,7 +549,7 @@
       "layout": {
         "line-cap": "butt",
         "line-join": "round",
-        "visibility": "none"
+        "visibility": "visible"
       },
       "paint": {
         "line-color": "rgba(255, 37, 0, 1)",
@@ -622,6 +611,38 @@
         "text-transform": "uppercase",
         "text-size": 12,
         "text-font": ["Lato Extra Light"],
+        "text-anchor": "bottom-left",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "place-labels-county",
+      "type": "symbol",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 8,
+      "filter": ["any", ["==", "place", "county"]],
+      "layout": {
+        "text-field": "{name}",
+        "text-transform": "uppercase",
+        "text-size": 14,
+        "text-font": ["Cabin Bold"],
+        "text-anchor": "bottom-left",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "place-labels-state",
+      "type": "symbol",
+      "source": "OSMWorld",
+      "source-layer": "places",
+      "minzoom": 4,
+      "filter": ["any", ["==", "place", "state"]],
+      "layout": {
+        "text-field": "{name}",
+        "text-transform": "uppercase",
+        "text-size": 16,
+        "text-font": ["Roboto Condensed Bold"],
         "text-anchor": "bottom-left",
         "visibility": "visible"
       }

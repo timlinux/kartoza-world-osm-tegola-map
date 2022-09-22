@@ -211,6 +211,35 @@ services:
     command: serve --config /config/tegola.conf
     volumes:
       - ./conf/tegola_conf:/config
+      - ./tiles:/tmp/tegola
+    depends_on:
+      - db
+    ports:
+      - 9090:9090
+    networks:
+      - osmmirror
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DBNAME=gis
+      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
+      - POSTGRES_HOST=db
+      - SSL_MODE=require
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  tegola-seed:
+    image: *tegola-image
+    entrypoint: /opt/tegola
+    command: cache seed --min-zoom 0 --max-zoom 4 --overwrite --concurrency 16 --config /config/tegola.conf
+    volumes:
+      - ./conf/tegola_conf:/config
+      - ./tiles:/tmp/tegola
     depends_on:
       - db
     ports:
