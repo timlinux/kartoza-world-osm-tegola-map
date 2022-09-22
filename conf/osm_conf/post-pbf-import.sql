@@ -8,3 +8,4 @@ CREATE INDEX streams_geom_idx ON osm.osm_waterways_streams USING GIST (geometry)
 CREATE INDEX admin_geom_idx ON osm.osm_admin USING GIST (geometry);
 CREATE INDEX places_geom_idx ON osm.osm_places USING GIST (geometry);
 CREATE INDEX buildings_geom_idx ON osm.osm_buildings USING GIST (geometry);
+CREATE INDEX water_polygons_geom_idx ON public.water_polygons USING GIST (geom);
