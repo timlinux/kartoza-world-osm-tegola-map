@@ -21,6 +21,7 @@
       "id": "background",
       "type": "background",
       "maxzoom": 24,
+      "layout": {"visibility": "visible"},
       "paint": {"background-color": "rgba(192, 225, 241, 1)"}
     },
     {
@@ -62,7 +63,7 @@
       "source-layer": "admin-3",
       "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(230, 131, 131, 1)",
+        "fill-color": "rgba(255, 255, 255, 1)",
         "fill-outline-color": "rgba(70, 70, 70, 1)"
       }
     },
@@ -73,7 +74,7 @@
       "source-layer": "admin-4",
       "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(224, 230, 156, 1)",
+        "fill-color": "rgba(255, 255, 255, 1)",
         "fill-outline-color": "rgba(41, 38, 38, 1)"
       }
     },
@@ -85,7 +86,7 @@
       "minzoom": 10,
       "layout": {"visibility": "visible"},
       "paint": {
-        "fill-color": "rgba(193, 175, 207, 1)",
+        "fill-color": "rgba(255, 255, 255, 1)",
         "fill-outline-color": "#292626"
       }
     },
@@ -94,6 +95,7 @@
       "type": "fill",
       "source": "OSMWorld",
       "source-layer": "coastlines",
+      "layout": {"visibility": "visible"},
       "paint": {"fill-color": "#C0E1F1"}
     },
     {
@@ -303,32 +305,26 @@
       }
     },
     {
-      "id": "roads-motorways-casing",
+      "id": "roads-motorway-casing",
       "type": "line",
       "source": "OSMWorld",
-      "source-layer": "roads",
-      "minzoom": 8,
-      "filter": [
-        "any",
-        ["==", "type", "motorway"],
-        ["==", "type", "motorway_link"]
-      ],
-      "layout": {"line-cap": "round", "visibility": "visible"},
+      "source-layer": "motorways",
+      "layout": {"visibility": "visible"},
       "paint": {
-        "line-color": "#8D8787",
         "line-width": [
           "interpolate",
           ["linear"],
           ["zoom"],
-          10,
-          0,
+          5,
+          2,
           12,
-          1,
+          5,
           15,
           12,
           20,
           15
-        ]
+        ],
+        "line-color": "#8D8787"
       }
     },
     {
@@ -486,21 +482,15 @@
       "id": "roads-motorways",
       "type": "line",
       "source": "OSMWorld",
-      "source-layer": "roads",
-      "minzoom": 9,
-      "filter": [
-        "any",
-        ["==", "type", "motorway"],
-        ["==", "type", "motorway_link"]
-      ],
-      "layout": {"line-cap": "round", "visibility": "visible"},
+      "source-layer": "motorways",
       "paint": {
-        "line-color": "#FFFFFF",
         "line-width": [
           "interpolate",
           ["linear"],
           ["zoom"],
-          10,
+          5,
+          0,
+          9,
           0,
           12,
           0.7,
@@ -508,7 +498,8 @@
           10,
           20,
           13
-        ]
+        ],
+        "line-color": "rgba(255, 255, 255, 1)"
       }
     },
     {
@@ -565,10 +556,11 @@
       "type": "line",
       "source": "OSMWorld",
       "source-layer": "railways",
+      "minzoom": 0,
       "layout": {
         "line-cap": "butt",
         "line-join": "round",
-        "visibility": "visible"
+        "visibility": "none"
       },
       "paint": {
         "line-color": "rgba(255, 37, 0, 1)",
@@ -608,7 +600,7 @@
       "type": "symbol",
       "source": "OSMWorld",
       "source-layer": "places",
-      "minzoom": 8,
+      "minzoom": 5,
       "filter": ["any", ["==", "place", "city"]],
       "layout": {
         "text-field": "{name}",
@@ -634,7 +626,13 @@
         "visibility": "visible"
       }
     },
-    {"id": "bay", "type": "fill", "source": "OSMWorld", "source-layer": "bay"}
+    {
+      "id": "bay",
+      "type": "fill",
+      "source": "OSMWorld",
+      "source-layer": "bay",
+      "layout": {"visibility": "none"}
+    }
   ],
   "id": "osm-liberty"
 }
