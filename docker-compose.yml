@@ -253,6 +253,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
       - POSTGRES_HOST=db
       - SSL_MODE=require
+      - TEGOLA_PORT=9999 # Anything different to the main tegola service
     restart: never
     logging:
       driver: json-file
