@@ -2,3 +2,4 @@ backups/*
 conf/osm_conf/timestamp.txt
 conf/osm_conf/country.pbf
 tiles/*
+.env

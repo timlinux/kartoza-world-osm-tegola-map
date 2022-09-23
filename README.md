@@ -35,18 +35,36 @@ That's it! Well almost - we use a couple of other things:
 * Read the [Tegola Documentation](https://tegola.io/documentation/) - it is really concise and clear.
 * Consult the [Maputnik Editor Documentation](https://github.com/maputnik/editor/wiki) - also make sure to use the little (i) hints all over the user interface.
 
-# Workflow overview
+## Workflow overview
 
-Here are the steps to getting set up with your own planetary tile server:
+Here is the outline of the steps to getting set up with your own planetary tile server:
 
-1) **You need a good computer and lots of disk fast space.** The import process will consume probably in excess of 150GB of your storage for the planet.pbf and the imposm cache files. Then when you start rendering and seeding tiles they can consume a lot of disk space. Plus you need to be able to responsively retrieve data from the database. For reference, on my developer maching, I have 64GB RAM, and AMD CPU with 24 threads and I had 1TB free space to work with. You can for sure get by with less but the better the spec your machine is, the better experience you will have.
-2) **Install basic requirements** It is assumed you are using Linux in these notes, but the steps should work similarly in macOS and Windows. You do need to have a git client installed and docker + docker-compose installed and ready to use.
-3) **Download the planet.pbf** In this step we download the global OSM dataset snapshot using a clever tool from MapTiler. From this pbf we will import a subset of the global features and attributes into our database.
-4) **Start the stack**. This will immediately begin the very lengthy process of extracting all the items defined in ``conf/osm_conf/mapping.yml`` from the PBF into your database. It is going to take a loooooong time (probably about 8 hours on my system), so be patient!
-5) **Start designing**. Once the import is done, the ´´osm´´ schema in your database will be populated and you can run Tegola and Maputnik Editor (both provided in our docker-compose.yml) to start designing your tileset.
-6) **Use your tiles**. Your tiles can then be used from QGIS and web mapping applications. You can optionally start seeding your tile cache (again this will take a long time depending on what level you seed to) using the tooling provided, then host them on a cloud native storage platform like Amazon S3.
+1️⃣ 🖥 **You need a good computer and lots of disk fast space.** The import process will consume probably in excess of 150GB of your storage for the planet.pbf and the imposm cache files. Then when you start rendering and seeding tiles they can consume a lot of disk space. Plus you need to be able to responsively retrieve data from the database. For reference, on my developer maching, I have 64GB RAM, and AMD CPU with 24 threads and I had 1TB free space to work with. You can for sure get by with less but the better the spec your machine is, the better experience you will have.
+2️⃣ 📦 **Install basic requirements** It is assumed you are using Linux in these notes, but the steps should work similarly in macOS and Windows. You do need to have a git client installed and docker + docker-compose installed and ready to use.
+3️⃣ 🌎 **Download the planet.pbf** In this step we download the global OSM dataset snapshot using a clever tool from MapTiler. From this pbf we will import a subset of the global features and attributes into our database.
+4️⃣ 🏃‍♀️ **Start the stack**. This will immediately begin the very lengthy process of extracting all the items defined in ``conf/osm_conf/mapping.yml`` from the PBF into your database. It is going to take a loooooong time (probably about 8 hours on my system), so be patient!
+5️⃣ 🖍 **Start designing**. Once the import is done, the ´´osm´´ schema in your database will be populated and you can run Tegola and Maputnik Editor (both provided in our docker-compose.yml) to start designing your tileset.
+6️⃣ 🗺 **Use your tiles**. Your tiles can then be used from QGIS and web mapping applications. You can optionally start seeding your tile cache (again this will take a long time depending on what level you seed to) using the tooling provided, then host them on a cloud native storage platform like Amazon S3.
 
-These notes are still to come...
+## Downloading the planet
+
+First we are going to download the planet file. Run this, then go have a cup of tea, watch a movie or play a game of Rocket League.....it's around 70gb to download:
+
+```
+docker-compose run planet-downloader
+```
+
+When it is done, you should find the downloaded file in ``conf/osm_conf/``. You must keep the planet file in that directory but rename it to ```country.pbf```.
+
+## Start the database
+
+The database needs to be running before you can run in the import. Copy the .env.template file to .env, then edit it, replacing the placeholders with proper values as indicated.
+
+Then start the database:
+
+```
+docker-compose up -d db
+```
 
 ## Credits
 

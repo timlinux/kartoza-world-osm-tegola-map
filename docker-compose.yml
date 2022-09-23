@@ -21,7 +21,7 @@ x-imposm-image: &imposm-image kartoza/docker-osm:imposm-latest
 x-osmenrich-image: &osm-enrich-image kartoza/docker-osm:osmenrich-latest
 x-tegola-image: &tegola-image gospatial/tegola
 x-maputnik-editor-image: &maputnik-editor-image maputnik/editor
-
+x-planet-downloader-image: &planet-downloader-image openmaptiles/openmaptiles-tools
 #
 # VOLUMES
 #
@@ -270,6 +270,21 @@ services:
     networks:
       - osmmirror
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
+  planet-downloader:
+    image: *planet-downloader-image
+    entrypoint: download-osm planet
+    command: -- -d /download
+    volumes:
+      - ./conf/osm_conf:/downloads
+    networks:
+      - osmmirror
+    restart: never
     logging:
       driver: json-file
       options:
