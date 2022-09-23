@@ -58,13 +58,135 @@ When it is done, you should find the downloaded file in ``conf/osm_conf/``. You 
 
 ## Start the database
 
-The database needs to be running before you can run in the import. Copy the .env.template file to .env, then edit it, replacing the placeholders with proper values as indicated.
+The database needs to be running before you can run in the import. Copy the ``.env.template`` file to .env, then edit it, replacing the placeholders with proper values as indicated.
 
 Then start the database:
 
 ```
 docker-compose up -d db
 ```
+
+Now watch the logs until you see confirmation that the database is up and ready to accept connections.
+
+```
+docker-compose logs -f db
+```
+
+## Start docker-osm and imposm
+
+This is the magic that loads your OSM planet file (since renamed to country.pbf) into the postgres database. It is going to take a loooooooooong time - around 8 hours on my system if I recall correctly. If your machine is slower, it could take even longer.
+
+```
+docker-compose up -d imposm osmupdate
+```
+
+You can again watch the progress using:
+
+```
+docker-compose logs -f
+```
+
+While the import runs you will regularly see messages like this in the logs:
+
+```
+osmplanet-imposm-1           | [2022-09-23T19:51:43Z] 0:00:01 [progress]     0s C:       0/s (3188) N:       0/s (128) W:       0/s (632) R:      0/s (9)
+```
+
+This can be broken down into:
+
+* C: Centroids?
+* N: Node
+* W: Ways
+* R: Routes
+
+With the planet import there will eventually be very large numbers of each to import. Once they are all at 100%, you need to do more waiting again. Now is a good time to watch the osm schema in the database.
+
+Keep listing the tables there until you see them appear:
+
+´´´
+docker-compose exec -u postgres db psql gis -c "\dt osm.*"
+
+gis=# \dt osm.*
+                      List of relations
+ Schema |                Name                | Type  | Owner  
+--------+------------------------------------+-------+--------
+ osm    | osm_admin                          | table | docker
+ osm    | osm_aeroway_linestring             | table | docker
+ osm    | osm_aeroway_points                 | table | docker
+...
+...
+...
+ osm    | osm_waterways_manmade              | table | docker
+ osm    | osm_waterways_points               | table | docker
+ osm    | osm_waterways_rivers               | table | docker
+ osm    | osm_waterways_streams              | table | docker
+(33 rows)
+
+´´´
+
+> Note that the specific list of which tables are created, and which features they contain is defined in `conf/osm_conf/mapping.yml`. The format for that mapping file is described in the [Imposm documentation](https://imposm.org/docs/imposm3/latest/mapping.html). The default mapping.yml we provide was develop for our work so includes things like healthsites, electrical infrastructure (don't confuse 'bay' with  beaches, it is an electrical [infrastructure construct](https://wiki.openstreetmap.org/wiki/Tag:line%3Dbay)) and other things that may not be relevant for your map.
+
+## Prepare extra context layers
+
+There are two additional tables that need to be loaded into the database before the provided configuration file will work. Both should be placed in the public schema. The first are low resolution boundaries of the world.
+
+### World Layer
+
+1. Open QGIS
+2. Use the 'world' easter egg (1) to quickly load the layer in QGIS
+3. ![image](https://user-images.githubusercontent.com/178003/192056969-d8531a2a-e66b-436e-8588-1681078b56e1.png)
+4. Then rename the 'World Map' layer to simply 'world' (2)
+5. Then drag and drop the layer into your database (3) - you need to have a PG connection set up to the docker database in order to do that.
+
+### Water Bodies Layer
+
+1. Download the water bodies layer from the [water polygons dataset](https://osmdata.openstreetmap.de/data/water-polygons.html) from OSM which gives you a good set of coastlines.
+2. Add the layer to QGIS
+3. Drag & drop the layer into the public schema of your database
+
+## Create spatial indexs
+
+There is a script in `conf/osm_conf/post-pbf-import.sql` which will build spatial and text based indexes on the various tables. However the above imported world and water_bodies layers will not have been covered so it is a good idea to run those commands again.
+
+## Start your tile server
+
+The file `conf/tegola_conf/tegola.conf` contains a default tegola configuration which will take various of the above tables and incorporate them into a map. To start tegola do:
+
+``docker-compose up -d tegola``
+
+After starting, tegola should provide a web interface to the published layers in the map.
+
+<http://localhost:9090/#2.96/-9.41/40.51>
+
+You may need to zoom in to start seeing the layers drawing.
+
+## Start Maputnik-editor
+
+The file `kartoza_osm_mapbox_style.json` contains a default maputnik configuration which will take various of the above tables and incorporate them into a cartographic product. To start maputnik editor do:
+
+``docker-compose up -d maputnik-editor``
+
+After starting, maputnik-editor should provide a web interface to the published layers in the map.
+
+<http://localhost:8888/>
+
+To use the starting `kartoza_osm_mapbox_style.json`, click the load button and the default set of cartographic rules we provide should load.
+
+## What next?
+
+From here on it is a process of editing your maputnik rules and then exporting the json file to use in your web mapping project.
+
+If we wish to use the tiles in QGIS, it will do a pretty good job of converting and rendering the styles. You can see the ``qgis-tegola-world-tile-layer.qlr`` file as an example of this (just drag and drop it into QGIS).
+
+If you wish to seed the cache, there is an example docker-compose service for doing that - you can tweak the options there to determine how many levels should be cached.
+
+``docker-compose run tegola-seed``
+
+If you are going to use your tiles in production, you may want to seed down to a certain level (e.g. level 15), and then use the vector tile rendering '[overzoom](https://docs.mapbox.com/help/glossary/overzoom/)' function so just show the same tiles at increasing levels. Just choose a level where the last details are added to your tiles.
+
+Lastly, take a look [at this MapLibre](https://maplibre.org/maplibre-gl-js-docs/example/simple-map/) example which shows how to create a web map with both your tiles and your custom cartography.
+
+I have tried to give you all the building blocks in this example to be able to see that you don't need to pay MapBox / ESRI or other vendors for the honor of using their vector tiles, you can do it all yourself with minimal effort.
 
 ## Credits
 
