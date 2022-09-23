@@ -1,6 +1,6 @@
 # A Self Hosted Planetary Vector Tile Set
 
-![image](https://user-images.githubusercontent.com/178003/191925782-c096f641-ae21-415b-8300-5ea13a0e8180.png)
+![peek](https://user-images.githubusercontent.com/178003/192062774-ca48ba81-efa2-4d33-8c78-41c0574c4429.gif)
 
 ## Elevator Pitch
 
