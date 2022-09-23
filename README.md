@@ -183,6 +183,8 @@ From here on it is a process of editing your maputnik rules and then exporting t
 
 If we wish to use the tiles in QGIS, it will do a pretty good job of converting and rendering the styles. You can see the ``qgis-tegola-world-tile-layer.qlr`` file as an example of this (just drag and drop it into QGIS).
 
+![peek](https://user-images.githubusercontent.com/178003/192067278-df97cfc7-8633-4949-a2b5-3aade8cb7774.gif)
+
 If you wish to seed the cache, there is an example docker-compose service for doing that - you can tweak the options there to determine how many levels should be cached.
 
 ``docker-compose run tegola-seed``
