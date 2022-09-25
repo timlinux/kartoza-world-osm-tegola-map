@@ -39,7 +39,7 @@ That's it! Well almost - we use a couple of other things:
 
 Here is the outline of the steps to getting set up with your own planetary tile server:
 
-1️⃣ 🖥 **You need a good computer and lots of disk fast space.** The import process will consume probably in excess of 150GB of your storage for the planet.pbf and the imposm cache files. Then when you start rendering and seeding tiles they can consume a lot of disk space. Plus you need to be able to responsively retrieve data from the database. For reference, on my developer maching, I have 64GB RAM, and AMD CPU with 24 threads and I had 1TB free space to work with. You can for sure get by with less but the better the spec your machine is, the better experience you will have.
+1️⃣ 🖥 **You need a good computer and lots of disk fast space.** The import process will consume probably in excess of 150GB of your storage for the planet.pbf and the imposm cache files. Then when you start rendering and seeding tiles they can consume a lot of disk space. Plus you need to be able to responsively retrieve data from the database. For reference, on my developer machine, I have 64GB RAM, and an AMD CPU with 24 threads and I had 1TB free space to work with. You can for sure get by with less but the better the spec your machine is, the better experience you will have.
 
 2️⃣ 📦 **Install basic requirements** It is assumed you are using Linux in these notes, but the steps should work similarly in macOS and Windows. You do need to have a git client installed and docker + docker-compose installed and ready to use.
 
