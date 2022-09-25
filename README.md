@@ -17,7 +17,7 @@
 
 These are the components used:
 
-* [Kartoza's](https://kartoza.com) [Docker OSM](https://github.com/kartoza/docker-osm) (and thanks to Ettiene Trimaille, original author)
+* [Kartoza's](https://kartoza.com) [Docker OSM](https://github.com/kartoza/docker-osm) (and thanks to Etienne Trimaille, original author)
 * [Kartoza's](https://kartoza.com) Imposm [mappings.yml](conf/osm_conf/mapping.yml) which determines which features are extracted from the OSM planet.pbf.
 * [Kartoza's](https://kartoza.com) [PostGIS Docker](https://github.com/kartoza/docker-postgis) image.
 * [Tegola](https://github.com/go-spatial/tegola/), an easy to configure and deploy vector tile server with built in cache seeding capabilities.
