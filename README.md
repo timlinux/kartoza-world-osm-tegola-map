@@ -127,7 +127,7 @@ gis=# \dt osm.*
  osm    | osm_waterways_streams              | table | docker
 (33 rows)
 
-´´´
+```
 
 > Note that the specific list of which tables are created, and which features they contain is defined in `conf/osm_conf/mapping.yml`. The format for that mapping file is described in the [Imposm documentation](https://imposm.org/docs/imposm3/latest/mapping.html). The default mapping.yml we provide was developed for our work so includes things like healthsites, electrical infrastructure (don't confuse 'bay' with  beaches, it is an electrical [infrastructure construct](https://wiki.openstreetmap.org/wiki/Tag:line%3Dbay)) and other things that may not be relevant for your map.
 
