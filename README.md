@@ -108,7 +108,7 @@ With the planet import there will eventually be very large numbers of each to im
 
 Keep listing the tables there until you see them appear:
 
-´´´
+```
 docker-compose exec -u postgres db psql gis -c "\dt osm.*"
 
 gis=# \dt osm.*
@@ -129,7 +129,7 @@ gis=# \dt osm.*
 
 ´´´
 
-> Note that the specific list of which tables are created, and which features they contain is defined in `conf/osm_conf/mapping.yml`. The format for that mapping file is described in the [Imposm documentation](https://imposm.org/docs/imposm3/latest/mapping.html). The default mapping.yml we provide was develop for our work so includes things like healthsites, electrical infrastructure (don't confuse 'bay' with  beaches, it is an electrical [infrastructure construct](https://wiki.openstreetmap.org/wiki/Tag:line%3Dbay)) and other things that may not be relevant for your map.
+> Note that the specific list of which tables are created, and which features they contain is defined in `conf/osm_conf/mapping.yml`. The format for that mapping file is described in the [Imposm documentation](https://imposm.org/docs/imposm3/latest/mapping.html). The default mapping.yml we provide was developed for our work so includes things like healthsites, electrical infrastructure (don't confuse 'bay' with  beaches, it is an electrical [infrastructure construct](https://wiki.openstreetmap.org/wiki/Tag:line%3Dbay)) and other things that may not be relevant for your map.
 
 ## Prepare extra context layers
 
