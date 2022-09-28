@@ -36,6 +36,7 @@ volumes:
   import_queue:
   osm_import_done:
   osm_import_queue:
+  # postgis_data:
 
     #
     # SERVICES
@@ -48,7 +49,9 @@ services:
     shm_size: 10g
     volumes:
       # Persistent storage of the database cluster 
-      - /home/timlinux/gisdata/docker-world-tegola-osm-map/postgis_data:/var/lib/postgresql
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./postgis_data:/var/lib/postgresql:z
     env_file: .env
     environment:
       # You can define multiple databases by providing a comma
@@ -107,11 +110,13 @@ services:
     image: *imposm-image
     volumes:
       # These are sharable to other containers
-      - ./conf/osm_conf:/home/settings
-      - osm_import_done:/home/import_done
-      - osm_import_queue:/home/import_queue
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/osm_conf:/home/settings:z
+      - osm_import_done:/home/import_done:z
+      - osm_import_queue:/home/import_queue:z
       #- osm_cache:/home/cache
-      - /home/timlinux/gisdata/docker-world-tegola-osm-map/osm_cache:/home/cache
+      - ./osm_cache:/home/cache:z
     depends_on:
       - db
     networks:
@@ -162,11 +167,13 @@ services:
     image: *osm-update-image
     volumes:
       # These are sharable to other containers
-      - ./conf/osm_conf:/home/settings
-      - osm_import_done:/home/import_done
-      - osm_import_queue:/home/import_queue
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/osm_conf:/home/settings:z
+      - osm_import_done:/home/import_done:z
+      - osm_import_queue:/home/import_queue:z
       #- osm_cache:/home/cache
-      - /home/timlinux/gisdata/docker-world-tegola-osm-map/osm_cache:/home/cache
+      - ./osm_cache:/home/cache:z
     depends_on:
       - db
     networks:
@@ -210,8 +217,10 @@ services:
     entrypoint: /opt/tegola
     command: serve --config /config/tegola.conf
     volumes:
-      - ./conf/tegola_conf:/config
-      - ./tiles:/tmp/tegola
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/tegola_conf:/config:z
+      - ./tiles:/tmp/tegola:z
     depends_on:
       - db
     ports:
@@ -239,8 +248,10 @@ services:
     entrypoint: /opt/tegola
     command: cache seed --min-zoom 0 --max-zoom 4 --overwrite --concurrency 16 --config /config/tegola.conf
     volumes:
-      - ./conf/tegola_conf:/config
-      - ./tiles:/tmp/tegola
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/tegola_conf:/config:z
+      - ./tiles:/tmp/tegola:z
     depends_on:
       - db
     networks:
@@ -281,7 +292,9 @@ services:
     entrypoint: download-osm planet
     command: -- -d /download
     volumes:
-      - ./conf/osm_conf:/downloads
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/osm_conf:/downloads:z
     networks:
       - osmmirror
     restart: never
