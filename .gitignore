@@ -1,3 +1,5 @@
+postgis_data
+osm_cache
 backups/*
 conf/osm_conf/timestamp.txt
 conf/osm_conf/country.pbf

@@ -272,6 +272,35 @@ services:
         max-size: 200m
         max-file: '10'
 
+  tegola-purge:
+    image: *tegola-image
+    entrypoint: /opt/tegola
+    command: cache purge --min-zoom 0 --max-zoom 24 --overwrite --concurrency 16 --config /config/tegola.conf
+    volumes:
+      # :z needed on systems like fedora using selinux
+      # when using host mounted volumes
+      - ./conf/tegola_conf:/config:z
+      - ./tiles:/tmp/tegola:z
+    depends_on:
+      - db
+    networks:
+      - osmmirror
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DBNAME=gis
+      - POSTGRES_PORT=${POSTGRES_PRIVATE_PORT}
+      - POSTGRES_HOST=db
+      - SSL_MODE=require
+      - TEGOLA_PORT=9999 # Anything different to the main tegola service
+    restart: never
+    logging:
+      driver: json-file
+      options:
+        max-size: 200m
+        max-file: '10'
+
   maputnik-editor:
     image: *maputnik-editor-image
     depends_on:
