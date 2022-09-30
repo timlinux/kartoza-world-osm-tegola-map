@@ -61,7 +61,7 @@ docker-compose run planet-downloader
 
 When it is done, you should find the downloaded file in ``conf/osm_conf/``. You must keep the planet file in that directory but rename it to ```country.pbf```.
 
-As an alternative, if you are only interested in producing a map for a specific country, you can grab the OSM extract for that country from https://download.geofabrik.de/. Just place the file as ``conf/osm_conf/country.pbf``.
+> As an alternative, if you are only interested in producing a map for a specific country, you can grab the OSM extract for that country from <https://download.geofabrik.de/>. Just place the file as ``conf/osm_conf/country.pbf``.
 
 ## Start the database
 
