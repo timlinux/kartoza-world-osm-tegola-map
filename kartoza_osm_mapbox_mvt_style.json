@@ -290,11 +290,38 @@
       }
     },
     {
+      "id": "roads-motorway-casing-with-link",
+      "type": "line",
+      "source": "OSMWorld",
+      "source-layer": "motorways",
+      "minzoom": 11,
+      "maxzoom": 24,
+      "filter": ["all"],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          5,
+          2,
+          12,
+          5,
+          15,
+          12,
+          20,
+          15
+        ],
+        "line-color": "#8D8787"
+      }
+    },
+    {
       "id": "roads-motorway-casing",
       "type": "line",
       "source": "OSMWorld",
       "source-layer": "motorways",
-      "minzoom": 13,
+      "minzoom": 5,
+      "maxzoom": 24,
       "filter": ["all", ["==", "type", "motorway"]],
       "layout": {"visibility": "visible"},
       "paint": {

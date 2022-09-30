@@ -169,7 +169,7 @@ You may need to zoom in to start seeing the layers drawing.
 
 ## Start Maputnik-editor
 
-The file `kartoza_osm_mapbox_style.json` contains a default maputnik configuration which will take various of the above tables and incorporate them into a cartographic product. To start maputnik editor do:
+This project contains two default maputnik configurations (see below for details on the difference between them) which will take various of the above tables and incorporate them into a cartographic product. To start maputnik editor do:
 
 ``docker-compose up -d maputnik-editor``
 
@@ -177,7 +177,11 @@ After starting, maputnik-editor should provide a web interface to the published 
 
 <http://localhost:8888/>
 
-To use the starting `kartoza_osm_mapbox_style.json`, click the load button and the default set of cartographic rules we provide should load.
+We provide two starting styles:
+
+1. **Non-MVT based**: I recommend this one right now and it avoids some as yet unresolved rendering issues. To use the starting `kartoza_osm_mapbox_regular_style.json`, click the load button and the default set of cartographic rules we provide should load.
+
+2. **MVT based**: This styleset uses ST_AsMVTGeometry queries to retrieve features from postgres, but has certain issues that we are still working to resolve (patches welcome!). To use the starting `kartoza_osm_mapbox_mvt_style.json`, click the load button and the default set of cartographic rules we provide should load.
 
 ## What next?
 
