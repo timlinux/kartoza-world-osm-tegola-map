@@ -51,6 +51,8 @@ Here is the outline of the steps to getting set up with your own planetary tile 
 
 6️⃣ 🗺 **Use your tiles**. Your tiles can then be used from QGIS and web mapping applications. You can optionally start seeding your tile cache (again this will take a long time depending on what level you seed to) using the tooling provided, then host them on a cloud native storage platform like Amazon S3.
 
+> 🚩 Note: If you are using Windows, please read these [additional troubleshooting notes](https://github.com/timlinux/kartoza-world-osm-tegola-map/issues/2).
+
 ## Downloading the planet
 
 First we are going to download the planet file. Run this, then go have a cup of tea, watch a movie or play a game of Rocket League.....it's around 70gb to download:
