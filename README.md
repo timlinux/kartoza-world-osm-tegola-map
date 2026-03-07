@@ -1,3 +1,5 @@
+> **Note:** This project is not actively being worked on. If you need help or would like to sponsor development, please contact: **info@kartoza.com**
+
 # A Self Hosted Planetary Vector Tile Set
 
 ![peek](https://user-images.githubusercontent.com/178003/192062774-ca48ba81-efa2-4d33-8c78-41c0574c4429.gif)
